@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace NasdaqExtrator.Core.Entity
 {
-    public class StockModel
+    public class StockEntity
     {
-        internal StockModel()
+        internal StockEntity()
         {
 
         }
 
-        public StockModel(string simbolo, string nome, List<StockPriceModel> precos, List<StockDividendModel> dividendos)
+        public StockEntity(string simbolo, string nome, List<StockPriceEntity> precos, List<StockDividendEntity> dividendos)
         {
             Simbolo = simbolo;
             Nome = nome;
@@ -26,8 +26,8 @@ namespace NasdaqExtrator.Core.Entity
 
         public string Nome { get; set; }
 
-        public List<StockPriceModel> Precos { get; set; }
+        public List<StockPriceEntity> Precos { get; set; }
 
-        public List<StockDividendModel> Dividendos { get; set; }
+        public List<StockDividendEntity> Dividendos { get; set; }
     }
 }

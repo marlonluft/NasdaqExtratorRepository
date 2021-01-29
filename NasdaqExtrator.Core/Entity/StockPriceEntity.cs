@@ -4,14 +4,14 @@ using System;
 
 namespace NasdaqExtrator.Core.Entity
 {
-    public class StockPriceModel
+    public class StockPriceEntity
     {
-        internal StockPriceModel()
+        internal StockPriceEntity()
         {
 
         }
 
-        public StockPriceModel(decimal precoFechamento, DateTime data)
+        public StockPriceEntity(decimal precoFechamento, DateTime data)
         {
             PrecoFechamento = precoFechamento;
             Data = data;

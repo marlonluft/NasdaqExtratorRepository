@@ -4,14 +4,14 @@ using System;
 
 namespace NasdaqExtrator.Core.Entity
 {
-    public class StockDividendModel
+    public class StockDividendEntity
     {
-        internal StockDividendModel()
+        internal StockDividendEntity()
         {
 
         }
 
-        public StockDividendModel(decimal valor, DateTime dataPagamento)
+        public StockDividendEntity(decimal valor, DateTime dataPagamento)
         {
             Valor = valor;
             DataPagamento = dataPagamento;
