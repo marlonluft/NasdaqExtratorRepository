@@ -26,6 +26,12 @@ namespace NasdaqExtrator.Core.Repository
             _stock.UpdateOne(filter, update);
         }
 
+        public StockEntity Buscar(ObjectId stockId)
+        {
+            var filter = Builders<StockEntity>.Filter.Eq(s => s.Id, stockId);
+            return _stock.Find(filter).FirstOrDefault();
+        }
+
         public ObjectId GravarStock(StockEntity stock)
         {
             //var filter = Builders<StockEntity>.Filter.Eq(s => s.Id, stock.Id);
