@@ -8,15 +8,14 @@ namespace NasdaqExtrator.Core.Entity
     {
         internal StockEntity()
         {
-
+            Precos = new List<StockPriceEntity>();
+            Dividendos = new List<StockDividendEntity>();
         }
 
-        public StockEntity(string simbolo, string nome, List<StockPriceEntity> precos, List<StockDividendEntity> dividendos)
+        public StockEntity(string simbolo, string nome) : this()
         {
             Simbolo = simbolo;
             Nome = nome;
-            Precos = precos;
-            Dividendos = dividendos;
         }
 
         [BsonId]

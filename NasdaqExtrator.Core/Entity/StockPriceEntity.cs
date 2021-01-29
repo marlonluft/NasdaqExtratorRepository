@@ -11,7 +11,7 @@ namespace NasdaqExtrator.Core.Entity
 
         }
 
-        public StockPriceEntity(decimal precoFechamento, DateTime data)
+        public StockPriceEntity(decimal precoFechamento, DateTime data) : this()
         {
             PrecoFechamento = precoFechamento;
             Data = data;

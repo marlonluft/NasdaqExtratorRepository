@@ -11,7 +11,7 @@ namespace NasdaqExtrator.Core.Entity
 
         }
 
-        public StockDividendEntity(decimal valor, DateTime dataPagamento)
+        public StockDividendEntity(decimal valor, DateTime dataPagamento) : this()
         {
             Valor = valor;
             DataPagamento = dataPagamento;
