@@ -13,6 +13,9 @@ namespace NasdaqExtrator.API.Util
             // Service
             services.AddScoped<INasdaqAPIService, NasdaqAPIService>();
 
+            // Repository
+            services.AddScoped<IStockRepository, StockRepository>();
+
             // Setting
             services.AddSingleton<IMongoDbSettings>(sp => sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
         }
