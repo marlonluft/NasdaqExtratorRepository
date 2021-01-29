@@ -9,6 +9,7 @@ namespace NasdaqExtrator.API.Util
         public static void ConfigurarAppSettings(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<NasdaqAPISetting>(configuration.GetSection("NasdaqAPI"));
+            services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
             services.AddOptions();
         }
     }

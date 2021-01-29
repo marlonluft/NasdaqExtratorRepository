@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using NasdaqExtrator.Core.Repository;
 using NasdaqExtrator.Core.Service;
+using NasdaqExtrator.Core.Settings;
 
 namespace NasdaqExtrator.API.Util
 {
@@ -9,6 +12,9 @@ namespace NasdaqExtrator.API.Util
         {
             // Service
             services.AddScoped<INasdaqAPIService, NasdaqAPIService>();
+
+            // Setting
+            services.AddSingleton<IMongoDbSettings>(sp => sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
         }
     }
 }
