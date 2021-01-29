@@ -24,11 +24,10 @@ namespace NasdaqExtrator.API.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var dividendsTask = _nasdaqApiService.GetDividends(DateTime.Now);
             var stockDividendsTask = _nasdaqApiService.GetStockDividends("IBM");
             var stockInfoTask = _nasdaqApiService.GetStockInfo("IBM");
 
-            Task.WaitAll(dividendsTask, stockDividendsTask, stockInfoTask);
+            Task.WaitAll(stockDividendsTask, stockInfoTask);
 
             var stockResult = stockInfoTask.Result;
             var stockDividendsResult = stockDividendsTask.Result;

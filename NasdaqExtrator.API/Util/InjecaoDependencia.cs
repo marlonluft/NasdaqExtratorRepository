@@ -12,9 +12,11 @@ namespace NasdaqExtrator.API.Util
         {
             // Service
             services.AddScoped<INasdaqAPIService, NasdaqAPIService>();
+            services.AddScoped<IDividendHistoryService, DividendHistoryService>();            
 
             // Repository
             services.AddScoped<IStockRepository, StockRepository>();
+            services.AddScoped<IDividendHistoryRepository, DividendHistoryRepository>();            
 
             // Setting
             services.AddSingleton<IMongoDbSettings>(sp => sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
