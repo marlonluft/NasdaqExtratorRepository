@@ -92,7 +92,7 @@ namespace NasdaqExtrator.API
 
         private void RegistrarJobsRecorrentes()
         {
-            RecurringJob.AddOrUpdate<IDividendHistoryService>("ImportarHistorico", x => x.ImportarHistorico(DateTime.Now.AddDays(-1)), Cron.Daily);
+            RecurringJob.AddOrUpdate<IDividendHistoryService>("ImportarHistorico", x => x.ImportarHistorico(DateTime.Now.AddDays(-1)), Cron.Daily(01));
         }
 
         private void ConfigurarArquivosEstaticos(IApplicationBuilder app)
