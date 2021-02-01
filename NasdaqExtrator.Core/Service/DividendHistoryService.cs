@@ -2,6 +2,7 @@
 using NasdaqExtrator.Core.Repository;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace NasdaqExtrator.Core.Service
@@ -25,13 +26,16 @@ namespace NasdaqExtrator.Core.Service
 
             var dividendsResult = dividendsTask.Result;
 
-            Parallel.ForEach(dividendsResult.Data.Calendar.Rows, (historico) =>
+            if (dividendsResult.Status.RCode == 200 && dividendsResult.Data.Calendar.Rows?.Count > 0)
             {
-                var dataPagamento = DateTime.ParseExact(historico.PaymentDate, "MM/dd/yyyy", null);
+                Parallel.ForEach(dividendsResult.Data.Calendar.Rows, (historico) =>
+                {
+                    var dataPagamento = DateTime.ParseExact(historico.PaymentDate, "MM/dd/yyyy", new CultureInfo("en-US"));
 
-                var dividendo = new DividendHistoryEntity(historico.Symbol, dataPagamento, historico.DividendRate);
-                _dividendHistoryRepository.Gravar(dividendo);
-            });
+                    var dividendo = new DividendHistoryEntity(historico.Symbol, dataPagamento, historico.DividendRate);
+                    _dividendHistoryRepository.Gravar(dividendo);
+                });
+            }
         }
 
         public List<DividendHistoryEntity> Listar(int anoConsolidar)
