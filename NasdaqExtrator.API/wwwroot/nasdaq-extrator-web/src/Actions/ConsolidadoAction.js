@@ -1,0 +1,3 @@
+export const LISTAR_TopDividendoPagosAnoCorrente = 'LISTAR_TopDividendoPagosAnoCorrente'
+export const LISTAR_TopPagadorasDividendosEstaveis = 'LISTAR_TopPagadorasDividendosEstaveis'
+export const LISTAR_TopStocksCrescentes = 'LISTAR_TopStocksCrescentes'
