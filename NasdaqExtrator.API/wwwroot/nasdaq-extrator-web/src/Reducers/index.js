@@ -1,9 +1,7 @@
 import { combineReducers } from 'redux'
 
-import { DividendoPagosAnoCorrente, PagadorasDividendosEstaveis, StocksCrescentes } from './ConsolidadoReducer'
+import { consolidadoReducer } from './ConsolidadoReducer'
 
 export default combineReducers({
-    dividendoPagosAnoCorrente: DividendoPagosAnoCorrente,
-    pagadorasDividendosEstaveis: PagadorasDividendosEstaveis,
-    stocksCrescentes: StocksCrescentes,
+    consolidado: consolidadoReducer,
 })
