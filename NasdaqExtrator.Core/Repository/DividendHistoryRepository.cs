@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using NasdaqExtrator.Core.Entity;
 using NasdaqExtrator.Core.Settings;
+using System;
 using System.Collections.Generic;
 
 namespace NasdaqExtrator.Core.Repository
@@ -24,8 +25,11 @@ namespace NasdaqExtrator.Core.Repository
 
         public List<DividendHistoryEntity> Listar(int anoConsolidar)
         {
+            var primeiraDataAno = new DateTime(anoConsolidar, 1, 1);
+            var ultimaDataAno = primeiraDataAno.AddYears(1).AddMilliseconds(-1);
+
             return _db
-                .Find(x => x.DataPagamento.ToLocalTime().Year == anoConsolidar)
+                .Find(x => x.DataPagamento >= primeiraDataAno && x.DataPagamento <= ultimaDataAno)
                 .ToList();
         }
     }
