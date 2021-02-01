@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using NasdaqExtrator.Core.Entity;
 using NasdaqExtrator.Core.Settings;
+using System.Collections.Generic;
 
 namespace NasdaqExtrator.Core.Repository
 {
@@ -19,6 +20,13 @@ namespace NasdaqExtrator.Core.Repository
         public void Gravar(DividendHistoryEntity entity)
         {
             _db.InsertOne(entity);
+        }
+
+        public List<DividendHistoryEntity> Listar(int anoConsolidar)
+        {
+            return _db
+                .Find(x => x.DataPagamento.ToLocalTime().Year == anoConsolidar)
+                .ToList();
         }
     }
 }

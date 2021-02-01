@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using NasdaqExtrator.Core.Entity.Consolidado;
 using NasdaqExtrator.Core.Settings;
+using System.Collections.Generic;
 
 namespace NasdaqExtrator.Core.Repository.Consolidado
 {
@@ -16,9 +17,19 @@ namespace NasdaqExtrator.Core.Repository.Consolidado
             _db = database.GetCollection<DividendosPagosAnoEntity>(settings.DividendosPagosAnoCollectionName);
         }
 
-        public void Gravar(DividendosPagosAnoEntity entity)
+        public void GravarLista(List<DividendosPagosAnoEntity> entities)
         {
-            _db.InsertOne(entity);
+            //TODO: atualizar existentes para não duplicar
+            _db.InsertMany(entities);
+        }
+
+        public List<DividendosPagosAnoEntity> ListarValorTotalPagoDecrescente(int ano, int quantidadeRegistros)
+        {
+            return _db
+                .Find(x => x.Ano == ano)
+                .SortByDescending(x => x.ValorTotalPago)
+                .Limit(quantidadeRegistros)
+                .ToList();
         }
     }
 }

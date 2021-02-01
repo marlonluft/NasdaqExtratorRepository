@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using NasdaqExtrator.API.Util;
 using NasdaqExtrator.Core.Service;
+using NasdaqExtrator.Core.Service.Consolidado;
 using System;
 using System.IO;
 
@@ -93,6 +94,7 @@ namespace NasdaqExtrator.API
         private void RegistrarJobsRecorrentes()
         {
             RecurringJob.AddOrUpdate<IDividendHistoryService>("ImportarHistorico", x => x.ImportarHistorico(DateTime.Now.AddDays(-1)), Cron.Daily(01));
+            RecurringJob.AddOrUpdate<IDividendosPagosAnoService>("DividendosPagosAnoService", x => x.Consolidar(DateTime.Now.Year), Cron.Daily(02));
         }
 
         private void ConfigurarArquivosEstaticos(IApplicationBuilder app)

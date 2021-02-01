@@ -1,6 +1,7 @@
 ﻿using NasdaqExtrator.Core.Entity;
 using NasdaqExtrator.Core.Repository;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NasdaqExtrator.Core.Service
@@ -31,6 +32,11 @@ namespace NasdaqExtrator.Core.Service
                 var dividendo = new DividendHistoryEntity(historico.Symbol, dataPagamento, historico.DividendRate);
                 _dividendHistoryRepository.Gravar(dividendo);
             });
+        }
+
+        public List<DividendHistoryEntity> Listar(int anoConsolidar)
+        {
+            return _dividendHistoryRepository.Listar(anoConsolidar);
         }
     }
 }
