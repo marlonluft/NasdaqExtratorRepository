@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using NasdaqExtrator.API.Util;
 using NasdaqExtrator.Core.Service;
 using System;
+using System.IO;
 
 namespace NasdaqExtrator.API
 {
@@ -47,6 +49,8 @@ namespace NasdaqExtrator.API
             }
 
             app.UseHttpsRedirection();
+
+            ConfigurarArquivosEstaticos(app);
 
             app.UseRouting();
 
@@ -89,6 +93,15 @@ namespace NasdaqExtrator.API
         private void RegistrarJobsRecorrentes()
         {
             RecurringJob.AddOrUpdate<IDividendHistoryService>("ImportarHistorico", x => x.ImportarHistorico(DateTime.Now.AddDays(-1)), Cron.Daily);
+        }
+
+        private void ConfigurarArquivosEstaticos(IApplicationBuilder app)
+        {
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot"))
+            });
         }
     }
 }
