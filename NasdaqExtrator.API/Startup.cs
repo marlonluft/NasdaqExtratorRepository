@@ -100,7 +100,7 @@ namespace NasdaqExtrator.API
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot"))
+                    Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\nasdaq-extrator-web\public"))
             });
         }
     }
