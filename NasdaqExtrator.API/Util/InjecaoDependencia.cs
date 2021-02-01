@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using NasdaqExtrator.Core.Repository;
 using NasdaqExtrator.Core.Service;
+using NasdaqExtrator.Core.Service.Consolidado;
 using NasdaqExtrator.Core.Settings;
 
 namespace NasdaqExtrator.API.Util
@@ -12,11 +13,14 @@ namespace NasdaqExtrator.API.Util
         {
             // Service
             services.AddScoped<INasdaqAPIService, NasdaqAPIService>();
-            services.AddScoped<IDividendHistoryService, DividendHistoryService>();            
+            services.AddScoped<IDividendHistoryService, DividendHistoryService>();
+            services.AddScoped<IDividendosPagosAnoService, DividendosPagosAnoService>();
+            services.AddScoped<IEvolucaoDividendosService, EvolucaoDividendosService>();
+            services.AddScoped<IStockEvolucaoService, StockEvolucaoService>();
 
             // Repository
             services.AddScoped<IStockRepository, StockRepository>();
-            services.AddScoped<IDividendHistoryRepository, DividendHistoryRepository>();            
+            services.AddScoped<IDividendHistoryRepository, DividendHistoryRepository>();
 
             // Setting
             services.AddSingleton<IMongoDbSettings>(sp => sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
