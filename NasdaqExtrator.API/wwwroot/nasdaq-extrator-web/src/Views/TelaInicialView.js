@@ -22,97 +22,112 @@ class TelaInicialView extends Component {
             <div>
                 <h2>Bem vindo</h2>
 
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th colSpan={4}>Top 10 Dividendos Pagos 2020</th>
-                        </tr>
-                        <tr>
-                            <th>Simbolo</th>
-                            <th>Valor Médio Pago</th>
-                            <th>Valor Total Pago</th>
-                            <th>Qtd Dividendos Pagos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            consolidado.TopDividendoPagosAnoCorrente.map((registro) => {
-                                return <tr key={registro.simbolo}>
-                                    <td>{registro.simbolo}</td>
-                                    <td>$ {registro.valorMedioPago}</td>
-                                    <td>$ {registro.valorTotalPago}</td>
-                                    <td>{registro.quantidadePaga}</td>
+                {
+                    consolidado.TopDividendoPagosAnoCorrente.length > 0 ?
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th colSpan={4}>Top 10 Dividendos Pagos 2020</th>
                                 </tr>
-                            })
-                        }
-                    </tbody>
-                </table>
+                                <tr>
+                                    <th>Simbolo</th>
+                                    <th>Valor Médio Pago</th>
+                                    <th>Valor Total Pago</th>
+                                    <th>Qtd Dividendos Pagos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    consolidado.TopDividendoPagosAnoCorrente.map((registro) => {
+                                        return <tr key={registro.simbolo}>
+                                            <td>{registro.simbolo}</td>
+                                            <td>$ {registro.valorMedioPago}</td>
+                                            <td>$ {registro.valorTotalPago}</td>
+                                            <td>{registro.quantidadePaga}</td>
+                                        </tr>
+                                    })
+                                }
+                            </tbody>
+                        </table>
+                        :
+                        <p>Nenhum registro para 'Top 10 Dividendos Pagos 2020'</p>
+                }
 
-<br/>
+                <br />
 
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th colSpan={2+consolidado.TopPagadorasDividendosEstaveis[0].anos.length}>Top 10 Pagadoras Dividendos Estáveis</th>
-                        </tr>
-                        <tr>
-                            <th>Simbolo</th>
-                            {
-                                consolidado.TopPagadorasDividendosEstaveis[0].anos.map((ano) => {
-                                    return <th>V.M. {ano.ano}</th>
-                                })
-                            }
-                            <th>Qtd Média Dividendos Pagos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            consolidado.TopPagadorasDividendosEstaveis.map((registro) => {
-                                return <tr key={registro.simbolo}>
-                                    <td>{registro.simbolo}</td>
+                {
+                    consolidado.TopPagadorasDividendosEstaveis.length > 0 ?
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th colSpan={2 + consolidado.TopPagadorasDividendosEstaveis[0].anos.length}>Top 10 Pagadoras Dividendos Estáveis</th>
+                                </tr>
+                                <tr>
+                                    <th>Simbolo</th>
                                     {
-                                        registro.anos.map((ano) => {
-                                            return <td>$ {ano.valorMedioDividendo}</td>
+                                        consolidado.TopPagadorasDividendosEstaveis[0].anos.map((ano) => {
+                                            return <th>V.M. {ano.ano}</th>
                                         })
                                     }
-                                    <td>{registro.quantidadeMediaDividendosPagos}</td>
+                                    <th>Qtd Média Dividendos Pagos</th>
                                 </tr>
-                            })
-                        }
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                {
+                                    consolidado.TopPagadorasDividendosEstaveis.map((registro) => {
+                                        return <tr key={registro.simbolo}>
+                                            <td>{registro.simbolo}</td>
+                                            {
+                                                registro.anos.map((ano) => {
+                                                    return <td>$ {ano.valorMedioDividendo}</td>
+                                                })
+                                            }
+                                            <td>{registro.quantidadeMediaDividendosPagos}</td>
+                                        </tr>
+                                    })
+                                }
+                            </tbody>
+                        </table>
+                        :
+                        <p>Nenhum registro para 'Top 10 Pagadoras Dividendos Estáveis'</p>
+                }
 
-                <br/>
+                <br />
 
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th colSpan={1+consolidado.TopStocksCrescentes[0].anos.length}>Top 10 Stock Crescentes</th>
-                        </tr>
-                        <tr>
-                            <th>Simbolo</th>
-                            {
-                                consolidado.TopStocksCrescentes[0].anos.map((ano) => {
-                                    return <th>Cresc. {ano.ano}</th>
-                                })
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            consolidado.TopStocksCrescentes.map((registro) => {
-                                return <tr key={registro.simbolo}>
-                                    <td>{registro.simbolo}</td>
+                {
+                    consolidado.TopStocksCrescentes.length > 0 ?
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th colSpan={1 + consolidado.TopStocksCrescentes[0].anos.length}>Top 10 Stock Crescentes</th>
+                                </tr>
+                                <tr>
+                                    <th>Simbolo</th>
                                     {
-                                        registro.anos.map((ano) => {
-                                            return <td>{ano.porcentagem}%</td>
+                                        consolidado.TopStocksCrescentes[0].anos.map((ano) => {
+                                            return <th>Cresc. {ano.ano}</th>
                                         })
                                     }
                                 </tr>
-                            })
-                        }
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                {
+                                    consolidado.TopStocksCrescentes.map((registro) => {
+                                        return <tr key={registro.simbolo}>
+                                            <td>{registro.simbolo}</td>
+                                            {
+                                                registro.anos.map((ano) => {
+                                                    return <td>{ano.porcentagem}%</td>
+                                                })
+                                            }
+                                        </tr>
+                                    })
+                                }
+                            </tbody>
+                        </table>
+                        :
+                        <p>Nenhum registro para 'Top 10 Stock Crescentes'</p>
+                }
 
             </div>
         )
