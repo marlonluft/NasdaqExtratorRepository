@@ -1,12 +1,28 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
+/* Actions */
+import { handleTopDividendoPagosAnoCorrente, handleTopPagadorasDividendosEstaveis, handleTopStocksCrescentes } from '../Actions/ConsolidadoAction'
 
 class TelaInicialView extends Component {
+
+    componentDidMount() {
+        this.props.onLoad()
+    }
+
     render() {
+
+        if (typeof this.props.consolidado === 'undefined') {
+            return ('Falha ao carregar a página, favor tentar novamente.');
+        }
+
+        const { consolidado } = this.props
+
         return (
             <div>
                 <h2>Bem vindo</h2>
 
-                <table>
+                <table border="1">
                     <thead>
                         <tr>
                             <th colSpan={4}>Top 10 Dividendos Pagos 2020</th>
@@ -19,86 +35,82 @@ class TelaInicialView extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>IBM</td>
-                            <td>$ 0.10</td>
-                            <td>$ 0.60</td>
-                            <td>6</td>
-                        </tr>
-                        <tr>
-                            <td>ERP</td>
-                            <td>$ 1.0</td>
-                            <td>$ 0.10</td>
-                            <td>10</td>
-                        </tr>
+                        {
+                            consolidado.TopDividendoPagosAnoCorrente.map((registro) => {
+                                return <tr key={registro.simbolo}>
+                                    <td>{registro.simbolo}</td>
+                                    <td>$ {registro.valorMedioPago}</td>
+                                    <td>$ {registro.valorTotalPago}</td>
+                                    <td>{registro.quantidadePaga}</td>
+                                </tr>
+                            })
+                        }
                     </tbody>
                 </table>
 
-                <table>
+<br/>
+
+                <table border="1">
                     <thead>
                         <tr>
-                            <th colSpan={4}>Top 10 Pagadoras Dividendos Estáveis</th>
+                            <th colSpan={2+consolidado.TopPagadorasDividendosEstaveis[0].anos.length}>Top 10 Pagadoras Dividendos Estáveis</th>
                         </tr>
                         <tr>
                             <th>Simbolo</th>
-                            <th>Valor Médio Pago</th>
-                            <th>V.M. 2020</th>
-                            <th>V.M. 2019</th>
-                            <th>V.M. 2018</th>
-                            <th>V.M. 2017</th>
+                            {
+                                consolidado.TopPagadorasDividendosEstaveis[0].anos.map((ano) => {
+                                    return <th>V.M. {ano.ano}</th>
+                                })
+                            }
                             <th>Qtd Média Dividendos Pagos</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>IBM</td>
-                            <td>$ 0.10</td>
-                            <td>$ 0.10</td>
-                            <td>$ 0.10</td>
-                            <td>$ 0.10</td>
-                            <td>$ 0.10</td>
-                            <td>6</td>
-                        </tr>
-                        <tr>
-                            <td>ERP</td>
-                            <td>$ 1.0</td>
-                            <td>$ 0.10</td>
-                            <td>$ 0.10</td>
-                            <td>$ 0.10</td>
-                            <td>$ 0.10</td>
-                            <td>10</td>
-                        </tr>
+                        {
+                            consolidado.TopPagadorasDividendosEstaveis.map((registro) => {
+                                return <tr key={registro.simbolo}>
+                                    <td>{registro.simbolo}</td>
+                                    {
+                                        registro.anos.map((ano) => {
+                                            return <td>$ {ano.valorMedioDividendo}</td>
+                                        })
+                                    }
+                                    <td>{registro.quantidadeMediaDividendosPagos}</td>
+                                </tr>
+                            })
+                        }
                     </tbody>
                 </table>
 
-                <table>
+                <br/>
+
+                <table border="1">
                     <thead>
                         <tr>
-                            <th colSpan={4}>Top 10 Stock Crescentes</th>
+                            <th colSpan={1+consolidado.TopStocksCrescentes[0].anos.length}>Top 10 Stock Crescentes</th>
                         </tr>
                         <tr>
                             <th>Simbolo</th>
-                            <th>Cresc. 2020</th>
-                            <th>Cresc. 2019</th>
-                            <th>Cresc. 2018</th>
-                            <th>Cresc. 2017</th>
+                            {
+                                consolidado.TopStocksCrescentes[0].anos.map((ano) => {
+                                    return <th>Cresc. {ano.ano}</th>
+                                })
+                            }
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>IBM</td>
-                            <td>10%</td>
-                            <td>10%</td>
-                            <td>10%</td>
-                            <td>10%</td>
-                        </tr>
-                        <tr>
-                            <td>ERP</td>
-                            <td>9%</td>
-                            <td>10%</td>
-                            <td>10%</td>
-                            <td>10%</td>
-                        </tr>
+                        {
+                            consolidado.TopStocksCrescentes.map((registro) => {
+                                return <tr key={registro.simbolo}>
+                                    <td>{registro.simbolo}</td>
+                                    {
+                                        registro.anos.map((ano) => {
+                                            return <td>{ano.porcentagem}%</td>
+                                        })
+                                    }
+                                </tr>
+                            })
+                        }
                     </tbody>
                 </table>
 
@@ -107,4 +119,17 @@ class TelaInicialView extends Component {
     }
 }
 
-export default TelaInicialView
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        onLoad: () => {
+            dispatch(handleTopDividendoPagosAnoCorrente())
+            dispatch(handleTopPagadorasDividendosEstaveis())
+            dispatch(handleTopStocksCrescentes())
+        }
+    }
+}
+
+export default connect((state) => ({
+    consolidado: state.consolidado,
+}), mapDispatchToProps)
+    (TelaInicialView)
