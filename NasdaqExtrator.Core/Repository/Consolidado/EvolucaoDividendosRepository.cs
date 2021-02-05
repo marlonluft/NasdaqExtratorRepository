@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using NasdaqExtrator.Core.Entity.Consolidado;
 using NasdaqExtrator.Core.Settings;
+using System.Collections.Generic;
 
 namespace NasdaqExtrator.Core.Repository.Consolidado
 {
@@ -16,9 +17,10 @@ namespace NasdaqExtrator.Core.Repository.Consolidado
             _db = database.GetCollection<EvolucaoDividendosEntity>(settings.EvolucaoDividendosCollectionName);
         }
 
-        public void Gravar(EvolucaoDividendosEntity entity)
+        public void GravarLista(List<EvolucaoDividendosEntity> lista)
         {
-            _db.InsertOne(entity);
+            //TODO: atualizar existentes para não duplicar
+            _db.InsertMany(lista);
         }
     }
 }
