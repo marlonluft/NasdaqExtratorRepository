@@ -6,5 +6,6 @@ namespace NasdaqExtrator.Core.Service.Consolidado
     public interface IStockEvolucaoService
     {
         List<StockEvolucaoEntity> ListarMelhores(int quantidadeRegistros, int quantidadeAnos);
+        void Consolidar(int anoConsolidar);
     }
 }
