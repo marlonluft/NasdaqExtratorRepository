@@ -2,6 +2,7 @@
 using NasdaqExtrator.Core.Entity.Consolidado;
 using NasdaqExtrator.Core.Settings;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NasdaqExtrator.Core.Repository.Consolidado
 {
@@ -19,7 +20,9 @@ namespace NasdaqExtrator.Core.Repository.Consolidado
 
         public void GravarLista(List<DividendosPagosAnoEntity> entities)
         {
-            //TODO: atualizar existentes para não duplicar
+            var filter = Builders<DividendosPagosAnoEntity>.Filter.In(s => s.Simbolo, entities.Select(x => x.Simbolo).ToArray());
+
+            _db.DeleteMany(filter);
             _db.InsertMany(entities);
         }
 

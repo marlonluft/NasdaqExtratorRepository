@@ -2,6 +2,7 @@
 using NasdaqExtrator.Core.Entity.Consolidado;
 using NasdaqExtrator.Core.Settings;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NasdaqExtrator.Core.Repository.Consolidado
 {
@@ -19,8 +20,19 @@ namespace NasdaqExtrator.Core.Repository.Consolidado
 
         public void GravarLista(List<EvolucaoDividendosEntity> lista)
         {
-            //TODO: atualizar existentes para não duplicar
+            var filter = Builders<EvolucaoDividendosEntity>.Filter.In(s => s.Simbolo, lista.Select(x => x.Simbolo).ToArray());
+
+            _db.DeleteMany(filter);
             _db.InsertMany(lista);
+        }
+
+        public List<EvolucaoDividendosEntity> ListarEstaveisDecrescente(int quantidadeRegistros)
+        {
+            return _db
+                .Find(x => x.PercentualVariacao.HasValue)
+                .SortBy(x => x.PercentualVariacao)
+                .Limit(quantidadeRegistros)
+                .ToList();
         }
     }
 }

@@ -18,14 +18,8 @@ namespace NasdaqExtrator.Core.Service.Consolidado
 
         public List<EvolucaoDividendosEntity> ListarMelhores(int quantidadeRegistros, int quantidadeAnos)
         {
-            return new List<EvolucaoDividendosEntity>
-            {
-                new EvolucaoDividendosEntity("IBM", 6, new List<EvolucaoDividendosAnoEntity>{
-                        new EvolucaoDividendosAnoEntity(2021, 0.10m),
-                        new EvolucaoDividendosAnoEntity(2020, 0.12m),
-                        new EvolucaoDividendosAnoEntity(2019, 0.11m)
-                    })
-            };
+            //TODO: limitar anos
+            return _evolucaoDividendosRepository.ListarEstaveisDecrescente(quantidadeRegistros);
         }
 
         public void Consolidar(int anoConsolidar)
@@ -38,7 +32,8 @@ namespace NasdaqExtrator.Core.Service.Consolidado
                 {
                     var quantidadeMediaDividendosPagos = 0;
 
-                    var anos = x.GroupBy(y => y.DataPagamento.ToUniversalTime().Year).Select(y => {
+                    var anos = x.GroupBy(y => y.DataPagamento.ToUniversalTime().Year).Select(y =>
+                    {
 
                         var qtdDividendos = y.Count();
                         quantidadeMediaDividendosPagos += qtdDividendos;
