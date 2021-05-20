@@ -49,9 +49,14 @@ namespace NasdaqExtrator.Core.Service
                         var value = historico.DividendRate;
 
                         var stock = _stockRepository.Find(historico.Symbol);
-                        stock.Dividends.Historico.Add(new StockDataValueEntity(value, paymentDate));
 
-                        stock.Dividends.CalculateAverage();
+                        if (!stock.Dividends.Historico.Any(x => x.Date == paymentDate))
+                        {
+                            stock.Dividends.Historico.Add(new StockDataValueEntity(value, paymentDate));
+                            stock.Dividends.CalculateAverage();
+
+                            _stockRepository.Save(stock);
+                        }
                     }
                     else
                     {
