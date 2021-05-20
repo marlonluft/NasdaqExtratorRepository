@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NasdaqExtrator.Core.Repository;
 
 namespace NasdaqExtrator.API.Controllers
 {
@@ -6,6 +7,11 @@ namespace NasdaqExtrator.API.Controllers
     [Route("[controller]")]
     public class PingController : ControllerBase
     {
+        public PingController(IStockRepository teste)
+        {
+            teste.ListAll();
+        }
+
         [HttpGet]
         public IActionResult Get()
         {

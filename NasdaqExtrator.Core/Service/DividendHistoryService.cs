@@ -1,46 +1,77 @@
 ﻿using NasdaqExtrator.Core.Entity;
+using NasdaqExtrator.Core.External;
 using NasdaqExtrator.Core.Repository;
+using NasdaqExtrator.Core.Util;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace NasdaqExtrator.Core.Service
 {
     public class DividendHistoryService : IDividendHistoryService
     {
-        private readonly INasdaqAPIService _nasdaqApiService;
-        private readonly IDividendHistoryRepository _dividendHistoryRepository;
+        private readonly INasdaqAPIExternal _NasdaqAPIExternal;
+        private readonly IStockRepository _stockRepository;
+        private readonly IStockService _stockService;
 
-        public DividendHistoryService(INasdaqAPIService nasdaqApiService, IDividendHistoryRepository dividendHistoryRepository)
+        public DividendHistoryService(INasdaqAPIExternal NasdaqAPIExternal, IStockRepository stockRepository, IStockService stockService)
         {
-            _nasdaqApiService = nasdaqApiService;
-            _dividendHistoryRepository = dividendHistoryRepository;
+            _NasdaqAPIExternal = NasdaqAPIExternal;
+            _stockRepository = stockRepository;
+            _stockService = stockService;
         }
 
         public void ImportarHistorico(DateTime data)
         {
-            var dividendsTask = _nasdaqApiService.GetDividends(data);
-
+            var dividendsTask = _NasdaqAPIExternal.GetDividends(data);
             Task.WaitAll(dividendsTask);
 
             var dividendsResult = dividendsTask.Result;
+            var storedSymbols = _stockRepository.ListAllSymbols();
 
             if (dividendsResult.Status.RCode == 200 && dividendsResult.Data.Calendar.Rows?.Count > 0)
             {
+                var stocksToImport = new List<string>();
+
                 Parallel.ForEach(dividendsResult.Data.Calendar.Rows, (historico) =>
                 {
-                    var dataPagamento = DateTime.ParseExact(historico.PaymentDate, "MM/dd/yyyy", new CultureInfo("en-US"));
+                    var existInDatabase = false;
 
-                    var dividendo = new DividendHistoryEntity(historico.Symbol, dataPagamento, historico.DividendRate);
-                    _dividendHistoryRepository.Gravar(dividendo);
+                    lock (storedSymbols)
+                    {
+                        existInDatabase = storedSymbols.Any(x => x == historico.Symbol);
+                    }
+
+                    if (existInDatabase)
+                    {
+                        var paymentDate = Helper.ParseNasdaqDate(historico.PaymentDate);
+                        var value = historico.DividendRate;
+
+                        var stock = _stockRepository.Find(historico.Symbol);
+                        stock.Dividends.Historico.Add(new StockDataValueEntity(value, paymentDate));
+
+                        stock.Dividends.CalculateAverage();
+                    }
+                    else
+                    {
+                        lock (stocksToImport)
+                        {
+                            stocksToImport.Add(historico.Symbol);
+                        }
+                    }
                 });
+
+                ImportStocks(stocksToImport);
             }
         }
 
-        public List<DividendHistoryEntity> Listar(int anoConsolidar)
+        private void ImportStocks(List<string> symbols)
         {
-            return _dividendHistoryRepository.Listar(anoConsolidar);
+            Parallel.ForEach(symbols.Distinct(), (string symbol) =>
+            {
+                _stockService.ImportCompleteStock(symbol);
+            });
         }
     }
 }

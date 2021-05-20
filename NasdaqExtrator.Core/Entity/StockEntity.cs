@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Collections.Generic;
 
 namespace NasdaqExtrator.Core.Entity
 {
@@ -8,25 +7,25 @@ namespace NasdaqExtrator.Core.Entity
     {
         internal StockEntity()
         {
-            Precos = new List<StockPriceEntity>();
-            Dividendos = new List<StockDividendEntity>();
+            Prices = new StockDataEntity();
+            Dividends = new StockDataEntity();
         }
 
-        public StockEntity(string simbolo, string nome) : this()
+        public StockEntity(string symbol, string name) : this()
         {
-            Simbolo = simbolo;
-            Nome = nome;
+            Symbol = symbol;
+            Name = name;
         }
 
         [BsonId]
         public ObjectId Id { get; set; }
 
-        public string Simbolo { get; set; }
+        public string Symbol { get; set; }
 
-        public string Nome { get; set; }
+        public string Name { get; set; }
 
-        public List<StockPriceEntity> Precos { get; set; }
+        public StockDataEntity Prices { get; set; }
 
-        public List<StockDividendEntity> Dividendos { get; set; }
+        public StockDataEntity Dividends { get; set; }
     }
 }

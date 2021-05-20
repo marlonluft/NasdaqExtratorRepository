@@ -1,79 +1,80 @@
-﻿using MongoDB.Bson;
-using NasdaqExtrator.Core.Entity;
+﻿using NasdaqExtrator.Core.Entity;
+using NasdaqExtrator.Core.External;
 using NasdaqExtrator.Core.Repository;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using System.Linq;
+using NasdaqExtrator.Core.Util;
 
 namespace NasdaqExtrator.Core.Service
 {
     public class StockService : IStockService
     {
-        private readonly INasdaqAPIService _nasdaqApiService;
+        private readonly INasdaqAPIExternal _NasdaqAPIExternal;
         private readonly IStockRepository _stockRepository;
 
-        public StockService(INasdaqAPIService nasdaqApiService, IStockRepository stockRepository)
+        public StockService(INasdaqAPIExternal NasdaqAPIExternal, IStockRepository stockRepository)
         {
-            _nasdaqApiService = nasdaqApiService;
+            _NasdaqAPIExternal = NasdaqAPIExternal;
             _stockRepository = stockRepository;
         }
 
-        public void ImportarStockCompleto(string simbolo)
+        public void ImportCompleteStock(string simbolo)
         {
-            var stockId = ImportarStock(simbolo);
-            ImportarStockDividendos(stockId, simbolo);
-            ImportarStockPrecos(stockId, simbolo);
+            var stock = ImportarStock(simbolo);
+
+            ImportarStockDividendos(stock, simbolo);
+            ImportarStockPrecos(stock, simbolo);
+
+            _stockRepository.Save(stock);
         }
 
-        private ObjectId ImportarStock(string simbolo)
+        private StockEntity ImportarStock(string simbolo)
         {
-            var stockInfoTask = _nasdaqApiService.GetStockInfo(simbolo);
+            var stockInfoTask = _NasdaqAPIExternal.GetStockInfo(simbolo);
             Task.WaitAll(stockInfoTask);
 
             var stockInfoResult = stockInfoTask.Result;
 
             var stock = new StockEntity(stockInfoResult.Data.Symbol, stockInfoResult.Data.CompanyName);
 
-            return _stockRepository.GravarStock(stock);
+            return stock;
         }
 
-        public void ImportarStockDividendos(ObjectId stockId)
+        private void ImportarStockDividendos(StockEntity stock, string simbolo)
         {
-            var stock = _stockRepository.Buscar(stockId);
-            ImportarStockDividendos(stock.Id, stock.Simbolo);
-        }
-
-        private void ImportarStockDividendos(ObjectId stockId, string simbolo)
-        {
-            var stockDividendsTask = _nasdaqApiService.GetStockDividends(simbolo);
+            var stockDividendsTask = _NasdaqAPIExternal.GetStockDividends(simbolo);
             Task.WaitAll(stockDividendsTask);
 
             var stockDividendsResult = stockDividendsTask.Result;
 
-            var listaDividendos = new List<StockDividendEntity>();
-
             foreach (var historico in stockDividendsResult.Data.Dividends.Rows)
             {
-                var valorDividendo = Convert.ToDecimal(historico.Amount, new CultureInfo("en-US"));
-                var datapagamento = DateTime.ParseExact(historico.PaymentDate, "MM/dd/yyyy", null);
+                if (!historico.PaymentDate.Equals("N/A"))
+                {
+                    var dividendValue = Helper.ParseNasdaqValue(historico.Amount);
+                    var paymentDate = Helper.ParseNasdaqDate(historico.PaymentDate);
 
-                listaDividendos.Add(new StockDividendEntity(valorDividendo, datapagamento));
+                    stock.Dividends.Historico.Add(new StockDataValueEntity(dividendValue, paymentDate));
+                }
             }
 
-            _stockRepository.AtualizarDividendos(stockId, listaDividendos);
+            stock.Dividends.CalculateAverage();
         }
 
-        public void ImportarStockPrecos(ObjectId stockId)
+        private void ImportarStockPrecos(StockEntity stock, string simbolo)
         {
-            var stock = _stockRepository.Buscar(stockId);
-            ImportarStockPrecos(stock.Id, stock.Simbolo);
-        }
-
-        private void ImportarStockPrecos(ObjectId stockId, string simbolo)
-        {
-            var stockInfoTask = _nasdaqApiService.GetStockInfo(simbolo);
+            var stockInfoTask = _NasdaqAPIExternal.GetStockInfo(simbolo);
             Task.WaitAll(stockInfoTask);
+
+            var stockInfoResult = stockInfoTask.Result.Data;
+
+            var lastPrice = Helper.ParseNasdaqValue(stockInfoResult.PrimaryData.LastSalePrice);
+
+            stock.Prices.Historico.Add(new StockDataValueEntity(lastPrice, DateTime.UtcNow));
+
+            // TODO calcular média
         }
     }
 }

@@ -4,9 +4,9 @@ using Calendar = NasdaqExtrator.Core.DTO.Calendar;
 using Dividends = NasdaqExtrator.Core.DTO.Quote.Dividends;
 using Info = NasdaqExtrator.Core.DTO.Quote.Info;
 
-namespace NasdaqExtrator.Core.Service
+namespace NasdaqExtrator.Core.External
 {
-    public interface INasdaqAPIService
+    public interface INasdaqAPIExternal
     {
         Task<Calendar.DividendsDTO> GetDividends(DateTime date);
         Task<Info.InfoDTO> GetStockInfo(string stock);

@@ -9,15 +9,15 @@ using Calendar = NasdaqExtrator.Core.DTO.Calendar;
 using Dividends = NasdaqExtrator.Core.DTO.Quote.Dividends;
 using Info = NasdaqExtrator.Core.DTO.Quote.Info;
 
-namespace NasdaqExtrator.Core.Service
+namespace NasdaqExtrator.Core.External
 {
-    public class NasdaqAPIService : INasdaqAPIService
+    public class NasdaqAPIExternal : INasdaqAPIExternal
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly HttpClient _client;
-        private readonly ILogger<NasdaqAPIService> _logger;
+        private readonly ILogger<NasdaqAPIExternal> _logger;
 
-        public NasdaqAPIService(IHttpClientFactory clientFactory, ILogger<NasdaqAPIService> logger)
+        public NasdaqAPIExternal(IHttpClientFactory clientFactory, ILogger<NasdaqAPIExternal> logger)
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 

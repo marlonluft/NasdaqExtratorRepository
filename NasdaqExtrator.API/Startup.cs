@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using NasdaqExtrator.API.Util;
 using NasdaqExtrator.Core.Service;
-using NasdaqExtrator.Core.Service.Consolidado;
 using System;
 using System.IO;
 
@@ -96,16 +95,13 @@ namespace NasdaqExtrator.API
                     CheckConnection = true
                 })
             );
+
             services.AddHangfireServer();
         }
 
         private void RegistrarJobsRecorrentes()
         {
             RecurringJob.AddOrUpdate<IDividendHistoryService>("ImportarHistorico", x => x.ImportarHistorico(DateTime.Now.AddDays(-1)), Cron.Daily(01));
-            RecurringJob.AddOrUpdate<IDividendosPagosAnoService>("DividendosPagosAnoService", x => x.Consolidar(DateTime.Now.Year), Cron.Daily(02));
-
-            RecurringJob.AddOrUpdate<IStockEvolucaoService>("StockEvolucaoService", x => x.Consolidar(DateTime.Now.Year), Cron.Daily(02, 10));
-            RecurringJob.AddOrUpdate<IEvolucaoDividendosService>("EvolucaoDividendosService", x => x.Consolidar(DateTime.Now.Year), Cron.Daily(02, 20));
         }
 
         private void ConfigurarArquivosEstaticos(IApplicationBuilder app)
