@@ -13,9 +13,5 @@
     <ProjectReference Include="..\NasdaqExtrator.Core\NasdaqExtrator.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
 
 </Project>

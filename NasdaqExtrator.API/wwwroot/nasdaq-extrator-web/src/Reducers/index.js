@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 
-import { consolidadoReducer } from './ConsolidadoReducer'
+import { stockReducer } from './StockReducer'
 
 export default combineReducers({
-    consolidado: consolidadoReducer,
+    stock: stockReducer,
 })
