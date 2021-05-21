@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Linq;
 using NasdaqExtrator.Core.Util;
+using Microsoft.Extensions.Logging;
 
 namespace NasdaqExtrator.Core.Service
 {
@@ -13,21 +14,33 @@ namespace NasdaqExtrator.Core.Service
     {
         private readonly INasdaqAPIExternal _NasdaqAPIExternal;
         private readonly IStockRepository _stockRepository;
+        private readonly ILogger<StockService> _logger;
 
-        public StockService(INasdaqAPIExternal NasdaqAPIExternal, IStockRepository stockRepository)
+        public StockService(INasdaqAPIExternal NasdaqAPIExternal, IStockRepository stockRepository, ILogger<StockService> logger)
         {
             _NasdaqAPIExternal = NasdaqAPIExternal;
             _stockRepository = stockRepository;
+            _logger = logger;
         }
 
         public void ImportCompleteStock(string simbolo)
         {
-            var stock = ImportarStock(simbolo);
+            try
+            {
+                var stock = ImportarStock(simbolo);
 
-            ImportarStockDividendos(stock, simbolo);
-            ImportarStockPrecos(stock, simbolo);
+                if (stock != null)
+                {
+                    ImportarStockDividendos(stock, simbolo);
+                    ImportarStockPrecos(stock, simbolo);
 
-            _stockRepository.Save(stock);
+                    _stockRepository.Save(stock);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("ImportCompleteStock", ex);
+            }
         }
 
         private StockEntity ImportarStock(string simbolo)
@@ -36,6 +49,11 @@ namespace NasdaqExtrator.Core.Service
             Task.WaitAll(stockInfoTask);
 
             var stockInfoResult = stockInfoTask.Result;
+
+            if (stockInfoResult.Data == null)
+            {
+                return null;
+            }
 
             var stock = new StockEntity(stockInfoResult.Data.Symbol, stockInfoResult.Data.CompanyName);
 
@@ -49,18 +67,21 @@ namespace NasdaqExtrator.Core.Service
 
             var stockDividendsResult = stockDividendsTask.Result;
 
-            foreach (var historico in stockDividendsResult.Data.Dividends.Rows)
+            if (stockDividendsResult.Data != null)
             {
-                if (!historico.PaymentDate.Equals("N/A"))
+                foreach (var historico in stockDividendsResult.Data.Dividends.Rows)
                 {
-                    var dividendValue = Helper.ParseNasdaqValue(historico.Amount);
-                    var paymentDate = Helper.ParseNasdaqDate(historico.PaymentDate);
+                    if (!historico.PaymentDate.Equals("N/A"))
+                    {
+                        var dividendValue = Helper.ParseNasdaqValue(historico.Amount);
+                        var paymentDate = Helper.ParseNasdaqDate(historico.PaymentDate);
 
-                    stock.Dividends.Historico.Add(new StockDataValueEntity(dividendValue, paymentDate));
+                        stock.Dividends.Historico.Add(new StockDataValueEntity(dividendValue, paymentDate));
+                    }
                 }
-            }
 
-            stock.Dividends.CalculateAverage();
+                stock.Dividends.CalculateAverage();
+            }
         }
 
         private void ImportarStockPrecos(StockEntity stock, string simbolo)

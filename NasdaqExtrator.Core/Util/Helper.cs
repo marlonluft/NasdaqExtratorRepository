@@ -13,6 +13,11 @@ namespace NasdaqExtrator.Core.Util
 
         public static decimal ParseNasdaqValue(string valueText)
         {
+            if (string.IsNullOrWhiteSpace(valueText))
+            {
+                return 0;
+            }
+
             var cleanValueText = valueText.Replace("$", string.Empty);
 
             var value = Convert.ToDecimal(cleanValueText, new CultureInfo("en-US"));

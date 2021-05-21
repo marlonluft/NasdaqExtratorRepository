@@ -45,17 +45,20 @@ namespace NasdaqExtrator.Core.Service
 
                     if (existInDatabase)
                     {
-                        var paymentDate = Helper.ParseNasdaqDate(historico.PaymentDate);
-                        var value = historico.DividendRate;
-
-                        var stock = _stockRepository.Find(historico.Symbol);
-
-                        if (!stock.Dividends.Historico.Any(x => x.Date == paymentDate))
+                        if (!historico.PaymentDate.Equals("N/A"))
                         {
-                            stock.Dividends.Historico.Add(new StockDataValueEntity(value, paymentDate));
-                            stock.Dividends.CalculateAverage();
+                            var paymentDate = Helper.ParseNasdaqDate(historico.PaymentDate);
+                            var value = historico.DividendRate;
 
-                            _stockRepository.Save(stock);
+                            var stock = _stockRepository.Find(historico.Symbol);
+
+                            if (!stock.Dividends.Historico.Any(x => x.Date == paymentDate))
+                            {
+                                stock.Dividends.Historico.Add(new StockDataValueEntity(value, paymentDate));
+                                stock.Dividends.CalculateAverage();
+
+                                _stockRepository.Save(stock);
+                            }
                         }
                     }
                     else
